@@ -28,8 +28,7 @@ cursor = connection.cursor()
 #     )")
 #     connection.commit()
 
-
-client_credentials_manager = SpotifyClientCredentials(client_id="126c0e4ccd2a4e73b22f853495f35bdd", client_secret="17e8b8c8109c4680b112337fe6fc4910")
+client_credentials_manager = SpotifyClientCredentials(client_id=os.environ["SPOTIFY_CLIENT_ID"], client_secret=os.environ["SPOTIFY_CLIENT_SECRET"])
 spotify = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 data = pd.read_csv("song_data.csv")
 features = ['duration_ms', 'explicit', 'valence', 'acousticness', 

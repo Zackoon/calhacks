@@ -1,5 +1,6 @@
 from tkinter import Label
-from flask import Flask, request
+from flask import Flask, request,send_from_directory
+from flask_cors import CORS, cross_origin
 import pandas as pd
 import numpy as np
 import sklearn
@@ -15,10 +16,10 @@ from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
 # Create a cursor.
-pg_conn_string = os.environ["PG_CONN_STRING"]
-connection = psycopg2.connect(pg_conn_string)
+#pg_conn_string = os.environ["PG_CONN_STRING"]
+#connection = psycopg2.connect(pg_conn_string)
 
-cursor = connection.cursor()
+#cursor = connection.cursor()
 
 # Create a table
 # def create_tables():
@@ -96,21 +97,31 @@ def list_to_json(vals):
                 "Image": vals[i][3],
                 "Audio": vals[i][4]} for i in np.arange(len(vals))]}
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder = 'dittycal/build', static_url_path="")
+CORS(app)
 @app.route('/data-right/<uri>', methods = ["POST","GET"])
+@cross_origin()
 def get_data_right(uri):
     vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 1, left_or_right = 'right', top_n_songs_random_select = 50))
     return vals
 
 @app.route('/data-left/<uri>', methods = ["POST","GET"])
+@cross_origin()
 def get_data_left(uri):
    vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 1, left_or_right = 'left', top_n_songs_random_select = 10000))
    return vals
 
 @app.route('/data-start/<uri>', methods = ["POST","GET"])
+@cross_origin()
 def get_data_start(uri):
     vals = list_to_json(driver_final_rec(data, np.random.choice(data["id"]), num_of_recs = 1, left_or_right = 'left'))
     return vals
+
+@app.route('/')
+@cross_origin()
+def serve():
+    return send_from_directory(app.static_folder,'index.html')
+
 
 # @app.route('/add-liked/<label>', methods = ["POST","GET"])
 # def add_to_liked(label):

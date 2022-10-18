@@ -53,7 +53,7 @@ def label_data_distances(song_id, df):
                             df_[features].values.tolist())[0]
     return df_
 
-def select_next_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.5, num_of_recs = 1
+def select_next_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.3, num_of_recs = 1
                     , left_or_right = 'right'):
     '''
     top_n_songs_random_select: closest n songs to original song, selected with probability 
@@ -63,7 +63,10 @@ def select_next_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_
     df_ = label_data_distances(song_id, df).sort_values('distances', ascending = (left_or_right == 'right'))
     df_ = df_[df_['popularity'] >= min_popularity_score]
     df_ = df_.iloc[np.arange(1, top_n_songs_random_select + 1)]
-    random_recs = np.random.choice(np.arange(len(df_)),
+    if left_or_right == "left":
+        random_recs=np.random.choice(np.arange(len(df_)), size = num_of_recs, replace = False)
+    else:
+        random_recs = np.random.choice(np.arange(len(df_)),
                     p = [i/sum([1/i for i in df_['distances']]) for i in [1/i for i in df_['distances']]], 
                     size = num_of_recs, replace = False)
     return df_.iloc[random_recs]
@@ -77,11 +80,11 @@ def find_song_and_pics(uris):
             results['tracks'][i]['album']['images'][len(results['tracks'][i]['album']['images']) - 1]['url'],
             results['tracks'][i]['preview_url']) for i in np.arange(len(results['tracks']))]
 
-def driver_final_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.5, num_of_recs = 1, left_or_right = 'right'):
+def driver_final_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.3, num_of_recs = 1, left_or_right = 'right'):
     i = 0
     while True:
         i += 1
-        possible_recs = select_next_rec(df, song_id, num_of_recs = num_of_recs, left_or_right = left_or_right)
+        possible_recs = select_next_rec(df, song_id, top_n_songs_random_select, num_of_recs = num_of_recs, left_or_right = left_or_right)
         uri_song_pic = find_song_and_pics(possible_recs['id'])
         if sum(["None" in "".join([str(i) for i in uri_song_pic[j]]) for j in np.arange(len(uri_song_pic))]) == 0:
             return uri_song_pic
@@ -96,17 +99,17 @@ def list_to_json(vals):
 app = Flask(__name__)
 @app.route('/data-right/<uri>', methods = ["POST","GET"])
 def get_data_right(uri):
-    vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 2, left_or_right = 'right', top_n_songs_random_select = 200))
+    vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 1, left_or_right = 'right', top_n_songs_random_select = 50))
     return vals
 
 @app.route('/data-left/<uri>', methods = ["POST","GET"])
 def get_data_left(uri):
-   vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 2, left_or_right = 'left', top_n_songs_random_select = 10000))
+   vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 1, left_or_right = 'left', top_n_songs_random_select = 10000))
    return vals
 
 @app.route('/data-start/<uri>', methods = ["POST","GET"])
 def get_data_start(uri):
-    vals = list_to_json(driver_final_rec(data, np.random.choice(data["id"]), num_of_recs = 2, left_or_right = 'left'))
+    vals = list_to_json(driver_final_rec(data, np.random.choice(data["id"]), num_of_recs = 1, left_or_right = 'left'))
     return vals
 
 # @app.route('/add-liked/<label>', methods = ["POST","GET"])

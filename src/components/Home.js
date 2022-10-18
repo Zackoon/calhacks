@@ -18,8 +18,8 @@ const getNextItems = (direction) =>
     .then(json => 
       json.Songs.map(song => {
         // Caching hack
-        // const img = document.createElement("img");
-        // img.src = song.Image;
+        const img = document.createElement("img");
+        img.src = song.Image;
         // console.log(img.src)
         return {
           id: song.Image,
@@ -134,7 +134,7 @@ export default function Home() {
     setItems(items.slice(1));
   };
 
-  const displayItems = items.slice(0, 2);
+  const displayItems = items.slice(0, 1);
   const activeItem = displayItems[0];
 
   displayItems.reverse(); // the first item should be rendered the last

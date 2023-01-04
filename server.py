@@ -54,7 +54,7 @@ def label_data_distances(song_id, df):
                             df_[features].values.tolist())[0]
     return df_
 
-def select_next_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.3, num_of_recs = 1
+def select_next_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.5, num_of_recs = 1
                     , left_or_right = 'right'):
     '''
     top_n_songs_random_select: closest n songs to original song, selected with probability 
@@ -81,7 +81,7 @@ def find_song_and_pics(uris):
             results['tracks'][i]['album']['images'][len(results['tracks'][i]['album']['images']) - 1]['url'],
             results['tracks'][i]['preview_url']) for i in np.arange(len(results['tracks']))]
 
-def driver_final_rec(df, song_id, top_n_songs_random_select = 30, min_popularity_score = 0.3, num_of_recs = 1, left_or_right = 'right'):
+def driver_final_rec(df, song_id, top_n_songs_random_select = 1000, min_popularity_score = 0.5, num_of_recs = 1, left_or_right = 'right'):
     i = 0
     while True:
         i += 1
@@ -117,10 +117,10 @@ def get_data_start(uri):
     vals = list_to_json(driver_final_rec(data, np.random.choice(data["id"]), num_of_recs = 1, left_or_right = 'left'))
     return vals
 
-@app.route('/')
-@cross_origin()
-def serve():
-    return send_from_directory(app.static_folder,'index.html')
+#@app.route('/')
+#@cross_origin()
+#def serve():
+    #return send_from_directory(app.static_folder,'index.html')
 
 
 # @app.route('/add-liked/<label>', methods = ["POST","GET"])

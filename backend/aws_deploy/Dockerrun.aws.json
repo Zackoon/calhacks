@@ -1,0 +1,13 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "576869501968.dkr.ecr.us-west-1.amazonaws.com/dittycal-backend",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": 5000,
+        "HostPort": 5000
+      }
+    ]
+  }

@@ -18,7 +18,6 @@ class SpotifyClient:
         url = 'https://api.spotify.com/v1/me'
         response = self._place_get_api_request(url).json()
         self._user_id = response['id']
-        print(self._user_id)
 
     def add_track_to_playlist(self, track_uri, playlist_name):
 
@@ -31,7 +30,6 @@ class SpotifyClient:
         # print(response_json)
 
         for playlist in response_json["items"]:
-            print(playlist['name'], playlist_name, playlist['id'])
             if playlist['name'] == playlist_name:
                 playlist_id = playlist['id']
                 break

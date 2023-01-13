@@ -1,7 +1,12 @@
 import React from "react";
 import { Link } from 'react-router-dom';
 import './Navbar.css';
-function NavBar(){
+function NavBar(props){
+    
+    const logout = () => {
+        props.logoutAction();
+      }
+      
     return(
         <nav className="navbar fixed-top navbar-expand-lg bg-*">
         <div className="container">
@@ -18,6 +23,9 @@ function NavBar(){
                 </li>
                 <li className="nav-item mx-auto">
                 <Link className="nav-link" to="/liked" >Liked Songs</Link>
+                </li>
+                <li>
+                <button onClick={logout}>Logout</button>
                 </li>
             </ul>
             </div>

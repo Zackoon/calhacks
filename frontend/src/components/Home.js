@@ -34,7 +34,7 @@ const getNextItems = (direction) =>
 
 
 
-const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, artist, uri }) => {
+const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, artist, uri, handleRight}) => {
   const cardRef = useRef();
 
   const controls = useAnimation();
@@ -67,6 +67,7 @@ const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, ar
   const handleDragEnd = () => {
     if (x.get()>0){
         mostRecentDir = "/data-right/"+uri
+        handleRight(uri);
     } else {
         mostRecentDir = "/data-left/"+uri
     }
@@ -102,7 +103,7 @@ const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, ar
   );
 };
 
-export default function Home() {
+export default function Home(props) {
   const backgroundTransformer = useSpring(0, {
     damping: 10000,
     mass: 0.01
@@ -134,6 +135,9 @@ export default function Home() {
   const handleRemoveItem = () => {
     setItems(items.slice(1));
   };
+  const sendIt = (uri) => {
+    props.handleLike(uri);
+  }
 
   const displayItems = items.slice(0, 1);
   const activeItem = displayItems[0];
@@ -155,6 +159,7 @@ export default function Home() {
               audio = {item.audio}
               artist = {item.artist}
               uri = {item.uri}
+              handleRight = {sendIt}
             />
           ))}
         </AnimatePresence>

@@ -12,7 +12,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
 from dotenv import load_dotenv
-load_dotenv()  # take environment variables from .env.
+load_dotenv() 
+from spotifyclient import SpotifyClient # take environment variables from .env.
 
 # Create a cursor.
 #pg_conn_string = os.environ["PG_CONN_STRING"]
@@ -103,6 +104,17 @@ CORS(app)
 def get_data_right(uri):
     vals = list_to_json(driver_final_rec(data, uri, num_of_recs = 1, left_or_right = 'right', top_n_songs_random_select = 50))
     return vals
+
+@app.route('/data-right/save', methods = ["POST"])
+@cross_origin()
+def addToPlaylist():
+    uri = "spotify:track:" + request.json["songID"]
+    token = request.json["userToken"]
+    spotify_client = SpotifyClient(token)
+    spotify_client.init_user()
+    playlist = 'Liked from DittyCal'
+    spotify_client.add_track_to_playlist(uri, playlist)
+    return token
 
 @app.route('/data-left/<uri>', methods = ["POST","GET"])
 @cross_origin()

@@ -20,7 +20,7 @@ const buttonStyle = {
 
 function App() {
   const CLIENT_ID = "77be3b537e7c4a049890a7bfe298fa41"
-  const REDIRECT_URI = "http://localhost:3000"
+  const REDIRECT_URI = "https://d2eifirn80iw3n.cloudfront.net/"
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
   const RESPONSE_TYPE = "token"
   const SCOPES = "playlist-modify-private playlist-modify-public user-read-recently-played"

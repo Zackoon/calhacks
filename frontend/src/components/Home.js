@@ -1,5 +1,5 @@
 import "./Home.css"; 
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   motion,
   useMotionValue,
@@ -9,8 +9,8 @@ import {
   AnimatePresence
 } from "framer-motion";
 
-let oldAudio = null;
 let mostRecentDir = "/data-start/2022";
+export let oldAudio = null;
 
 const getNextItems = (direction) =>
   fetch(mostRecentDir)
@@ -90,7 +90,7 @@ const StartCard = ({isActive, onRemove, backgroundTransformer, handleSwipe}) => 
   );
 };
 
-const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, artist, uri, handleRight}) => {
+const Card = ({ src, isActive, onRemove, backgroundTransformer, label,audio, artist, uri, handleRight}) => {
   const cardRef = useRef();
 
   const controls = useAnimation();
@@ -100,6 +100,9 @@ const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, ar
 
   const THRESHOLD = 69;
 
+  if (isActive) {
+    controls.start({ scale: 1 });
+  }
   if (oldAudio != null){
     oldAudio.pause()
   }
@@ -107,10 +110,6 @@ const Card = ({ src, isActive, onRemove, backgroundTransformer, label, audio, ar
   currAudio.volume = 0.5;
   currAudio.play()
   oldAudio = currAudio;
-
-  if (isActive) {
-    controls.start({ scale: 1 });
-  }
 
   useEffect(
     () =>

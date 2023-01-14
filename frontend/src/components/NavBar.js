@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from 'react-router-dom';
 import './Navbar.css';
+import {oldAudio} from './Home.js';
 function NavBar(props){
-    
     const logout = () => {
         props.logoutAction();
-      }
+        oldAudio.pause();
+    }
       
     return(
         <nav className="navbar fixed-top navbar-expand-lg bg-*">

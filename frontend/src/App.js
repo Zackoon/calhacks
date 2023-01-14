@@ -5,6 +5,7 @@ import LikedSongs from "./components/LikedSongs";
 import NavBar from "./components/NavBar";
 import React, { useState, useEffect } from 'react';
 
+
 const buttonStyle = {
   backgroundColor: "#009688",
   borderRadius: 10,
@@ -20,13 +21,14 @@ const buttonStyle = {
 
 function App() {
   const CLIENT_ID = "77be3b537e7c4a049890a7bfe298fa41"
-  const REDIRECT_URI = "https://d2eifirn80iw3n.cloudfront.net/"
+  const REDIRECT_URI = "http://localhost:3000/"
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
   const RESPONSE_TYPE = "token"
   const SCOPES = "playlist-modify-private playlist-modify-public user-read-recently-played"
 
   const [token, setToken] = useState("")
   const [guest, setGuest] = useState(false)
+
 
   const logout = () => {
     setToken("")
@@ -89,7 +91,7 @@ const sendToPlaylist = (uri) => {
           </header>
       </div>  
       )
-  } else { 
+  } else {
     return (
     <Router>
     <NavBar logoutAction = {logout}/>

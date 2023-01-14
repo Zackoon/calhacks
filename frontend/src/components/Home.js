@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 
 let mostRecentDir = "/data-start/2022";
-export let oldAudio = null;
+let oldAudio = null;
 
 const getNextItems = (direction) =>
   fetch(mostRecentDir)
@@ -90,7 +90,7 @@ const StartCard = ({isActive, onRemove, backgroundTransformer, handleSwipe}) => 
   );
 };
 
-const Card = ({ src, isActive, onRemove, backgroundTransformer, label,audio, artist, uri, handleRight}) => {
+const Card = ({ src, isActive, onRemove, backgroundTransformer, label,audio, artist, uri, handleRight, handleNextAudio}) => {
   const cardRef = useRef();
 
   const controls = useAnimation();
@@ -110,6 +110,7 @@ const Card = ({ src, isActive, onRemove, backgroundTransformer, label,audio, art
   currAudio.volume = 0.5;
   currAudio.play()
   oldAudio = currAudio;
+  handleNextAudio(oldAudio);
 
   useEffect(
     () =>
@@ -196,6 +197,9 @@ export default function Home(props) {
   const sendIt = (uri) => {
     props.handleLike(uri);
   }
+  const setParentAudio = (audioObj) => {
+    props.handleNewCard(audioObj)
+  }
 
   const displayItems = items.slice(0, 1);
   const activeItem = displayItems[0];
@@ -239,6 +243,7 @@ export default function Home(props) {
               artist = {item.artist}
               uri = {item.uri}
               handleRight = {sendIt}
+              handleNextAudio = {setParentAudio}
             />
           ))}
         </AnimatePresence>

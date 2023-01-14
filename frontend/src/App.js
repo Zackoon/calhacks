@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import LikedSongs from "./components/LikedSongs";
 import NavBar from "./components/NavBar";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext} from 'react';
 
 
 const buttonStyle = {
@@ -17,6 +17,7 @@ const buttonStyle = {
   alignSelf: "center",
   textTransform: "uppercase"
 } 
+export const MusicContext = createContext();
 
 
 function App() {
@@ -28,9 +29,9 @@ function App() {
 
   const [token, setToken] = useState("")
   const [guest, setGuest] = useState(false)
-
-
+  let sound = null;
   const logout = () => {
+    sound.pause();
     setToken("")
     window.localStorage.removeItem("token")
     setGuest(false)
@@ -39,7 +40,9 @@ function App() {
     setToken("Guest")
     setGuest(true)
   }
-
+  const handleAudio = (audioObj) => {
+    sound = audioObj;
+  }
   useEffect(() => {
     const hash = window.location.hash
     let token = window.localStorage.getItem("token")
@@ -96,7 +99,7 @@ const sendToPlaylist = (uri) => {
     <Router>
     <NavBar logoutAction = {logout}/>
       <Routes>
-        <Route path="/" element={<Home handleLike = {sendToPlaylist} />} />
+        <Route path="/" element={<Home handleLike = {sendToPlaylist} handleNewCard = {handleAudio}/>} />
         <Route path = "/liked" element = {<LikedSongs/>} />
       </Routes>
     </Router>

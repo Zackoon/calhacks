@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import LikedSongs from "./components/LikedSongs";
 import NavBar from "./components/NavBar";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext} from 'react';
+
 
 const buttonStyle = {
   backgroundColor: "#009688",
@@ -16,6 +17,7 @@ const buttonStyle = {
   alignSelf: "center",
   textTransform: "uppercase"
 } 
+export const MusicContext = createContext();
 
 
 function App() {
@@ -26,40 +28,37 @@ function App() {
   const SCOPES = "playlist-modify-private playlist-modify-public user-read-recently-played"
 
   const [token, setToken] = useState("")
-
+  const [guest, setGuest] = useState(false)
+  let sound = null;
   const logout = () => {
+    sound.pause();
     setToken("")
     window.localStorage.removeItem("token")
+    setGuest(false)
   }
-
+  const handleGuestLogin = () => {
+    setToken("Guest")
+    setGuest(true)
+  }
+  const handleAudio = (audioObj) => {
+    sound = audioObj;
+  }
   useEffect(() => {
-      const hash = window.location.hash
-      let token = window.localStorage.getItem("token")
+    const hash = window.location.hash
+    let token = window.localStorage.getItem("token")
 
-      if (!token && hash) {
-          token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
+    if (!token && hash) {
+        token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
 
-          window.location.hash = ""
-          window.localStorage.setItem("token", token)
-      }
-      console.log(token)
-      setToken(token)
-  }, [])
+        window.location.hash = ""
+        window.localStorage.setItem("token", token)
+    }
+    console.log(token)
+    setToken(token)
+}, [])
 
-
-  if (!token) {
-      return (
-        <div className="App">
-          <header className="App-header">
-              <h1>DittyCal</h1>
-                  <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPES}`}><button style = {buttonStyle}>Login
-                      to Spotify</button></a>
-          </header>
-      </div>  
-      )
-  }
-
-  const sendToPlaylist = (uri) => 
+const sendToPlaylist = (uri) => {
+  if (!guest) {
     fetch("/data-right/save", {
       method: 'POST',
       body: JSON.stringify({
@@ -79,16 +78,33 @@ function App() {
     }).catch(function (error) {
       console.warn('Something went wrong.', error);
     });
-  
-  return (
+  } else {
+    console.log('This action is disabled for guest users.')
+  }
+}
+
+    if (!token && !guest) {
+      return (
+        <div className="App">
+          <header className="App-header">
+              <h1>DittyCal</h1>
+                  <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPES}`}><button style = {buttonStyle}>Login
+                      to Spotify</button></a>
+                      <button onClick={handleGuestLogin}>Guest Login (Liked songs only saved temporarily) </button>
+          </header>
+      </div>  
+      )
+  } else {
+    return (
     <Router>
     <NavBar logoutAction = {logout}/>
       <Routes>
-        <Route path="/" element={<Home handleLike = {sendToPlaylist} />} />
+        <Route path="/" element={<Home handleLike = {sendToPlaylist} handleNewCard = {handleAudio}/>} />
         <Route path = "/liked" element = {<LikedSongs/>} />
       </Routes>
     </Router>
   );
+  }
 }
 
 export default App;
